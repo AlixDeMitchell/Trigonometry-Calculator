@@ -1,0 +1,289 @@
+#define _USE_MATH_DEFINES ///needed for M_PI
+#include <iostream>   ///needed for input and output
+#include <cmath>    ///needed for M_PI, and trig functions   
+#include <limits>  ///for error checking function GetInput
+
+
+struct Triangle  ///used to pass this set of variables into my functions
+{
+	float m_side_1;
+	float m_side_2;
+	float m_side_h;
+	float m_angle_a;
+	float m_angle_b;
+	float m_angle_c;
+	float m_area;
+};
+
+///function prototypes for the functions that contain checks for user input (known values) and perform math functions
+
+float GetAngle_a(struct Triangle triValues);
+float GetAngle_b(struct Triangle triValues);
+float GetSide_1(struct Triangle triValues);
+float GetSide_2(struct Triangle triValues);
+float GetSide_h(struct Triangle trivalues);
+float GetArea(struct Triangle triValues);
+float GetInput(void);
+bool ValidTriangle(struct Triangle triValues);
+
+int main (void)
+{
+	///local variables for input values, called from the struct
+
+	Triangle triValues;
+
+	triValues.m_side_1=0.0f;
+	triValues.m_side_2=0.0f;
+	triValues.m_side_h=0.0f;
+	triValues.m_angle_a=0.0f;
+	triValues.m_angle_b=0.0f;
+	triValues.m_angle_c=0.0f;
+	triValues.m_area=0.0f;
+
+
+
+	///intro prompt 
+	std::cout<<"              || TRIGONOMETRY CALCULATOR ||" <<std::endl
+		<<"\n\nWelcome to TrigMagic Trigonometry Calculator: Tricks of the Trig!" <<std::endl
+		<< "Please enter all known values for your triangle. Enter 0 for unknown values.\n\n" <<std::endl;
+
+	///triangle reference graphic display
+	std::cout<<"    Angle a         "<<std::endl;
+	std::cout<<"       |\\           "<<std::endl;
+	std::cout<<"       | \\          "<<std::endl;
+	std::cout<<"side 1 |  \\   side h "<<std::endl;
+	std::cout<<"       |   \\  (hypotenuse) "<<std::endl;
+	std::cout<<"       |    \\        "<<std::endl;
+	std::cout<<"       |_____\\       "<<std::endl;
+	std::cout<<" Angle c      Angle b"<<std::endl;
+	std::cout<<"        side 2      "<<std::endl;
+
+	///get input from user
+
+		std::cout<< "\nSide 1: ";
+		triValues.m_side_1= GetInput();
+		std::cout<<"\nSide 2: ";
+		triValues.m_side_2= GetInput();
+		std::cout<<"\nSide H: ";
+		triValues.m_side_h= GetInput();
+	  std::cout<< "\nArea: ";
+	  triValues.m_area= GetInput();
+	  std::cout<<"\nAngle a (in degrees): ";
+	  triValues.m_angle_a= GetInput();
+	  std::cout<<"\nAngle b (in degrees): ";
+	  triValues.m_angle_b = GetInput();
+	  std::cout<<"\nAngle c: always 90 degrees! :)\n\n ";
+
+
+	/**for loop that iterates twice: once to check and solve with known values from user input,
+	the second iteration to then use the calculated values from the first iteration
+	to calculate the remaining unknowns. */
+	for ( int i = 0; i < 2; i++ )
+	{
+    if ( triValues.m_side_h == 0.0f )
+		{
+			triValues.m_side_h = GetSide_h(triValues);
+		}
+		if ( triValues.m_side_1 == 0.0f )
+		{
+			triValues.m_side_1 = GetSide_1(triValues);
+		}
+		if ( triValues.m_side_2 == 0.0f )
+		{
+			triValues.m_side_2 = GetSide_2(triValues);
+		}
+		if ( triValues.m_angle_a == 0.0f )
+		{
+			triValues.m_angle_a = GetAngle_a(triValues);
+		}
+		if ( triValues.m_angle_b == 0.0f )
+		{
+			triValues.m_angle_b = GetAngle_b(triValues);
+		}
+		if ( triValues.m_area == 0.0f )
+		{
+			triValues.m_area = GetArea(triValues);
+		}
+	}
+
+  /**if statement to check whether the input values 
+  and calculated values actually equal a valid right angle triangle
+  while (ValidTriangle(triValues) == true)
+  {
+    ValidTriangle;
+  }*/
+
+  ///output results
+  std::cout<<"\nResults: "<< "\nSide 1 = "<< triValues.m_side_1<< "\n"; 
+  std::cout<<"\nSide 2 = "<< triValues.m_side_2<< "\n"; 
+  std::cout<<"\nSide H = "<< triValues.m_side_h<< "\n"; 
+  std::cout<<"\nAngle a = "<< triValues.m_angle_a<< "\n"; 
+  std::cout<<"\nAngle b = "<< triValues.m_angle_b<< "\n"; 
+  std::cout<<"\nArea = "<< triValues.m_area<< "\n"; 
+  std::cout<<"\nThank you for using TrigMagic Trigonometry Calculator: Tricks of the Trig!\n\n";
+ 
+
+	system("PAUSE");
+	return 0;
+  
+  
+}
+
+float GetInput (void) ///used to check errors in input values
+{ 
+	bool valid = false; ///boolean used for while loop
+	float input;
+
+	while (!valid)
+	{
+		if ( std::cin>>input ) ///checks if std::cin is the right type of input (in this case a float)
+		{
+			valid = true;	///if it is the right type, the loop will end and the function will return the variable input
+		}
+		else
+		{
+			std::cin.clear(); ///removes error flag
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(),'\n'); ///clears the invalid input stream
+			std::cout<<"\nInvalid input, please try again."<<std::endl;
+		}
+	}
+	return input;
+}
+
+float GetSide_1(struct Triangle triValues) 
+	/**function to calculate value of side 1, checks vs. given info and 
+	uses the correct trigonometric function based on what is available*/
+{
+
+	if ( triValues.m_angle_a!= 0 && triValues.m_side_h!=0 ) ///checks for info necessary to use cos
+	{
+		triValues.m_side_1 = cos(triValues.m_angle_a*(M_PI/180))*triValues.m_side_h; 
+	}
+	else if ( triValues.m_angle_b!=0 && triValues.m_side_h!=0 ) ///checks for info necessary to use sin
+	{
+		triValues.m_side_1 = sin(triValues.m_angle_b*(M_PI*180))*triValues.m_side_h;
+	}
+	else if ( triValues.m_angle_b!=0 && triValues.m_side_2!=0 ) ///checks for info necessary to use tan
+	{
+		triValues.m_side_1 = tan(triValues.m_angle_b*(M_PI/180))*triValues.m_side_2;   
+	}
+  else if ( triValues.m_side_h!=0 && triValues.m_side_2!=0 )
+  {
+    triValues.m_side_1 = sqrt((pow(triValues.m_side_h,2) - pow(triValues.m_side_2,2)));
+  }
+
+	return triValues.m_side_1; ///returns result
+
+}
+
+float GetSide_2(struct Triangle triValues)
+	/**function to calculate the value of side 2, checks given info
+	and uses appropriate trig function depending on what is known*/
+{
+	if ( triValues.m_angle_a!= 0 && triValues.m_side_h!=0 ) ///checks for info necessary to use sin
+	{
+		triValues.m_side_2 = sin(triValues.m_angle_a*(M_PI/180))*triValues.m_side_h;
+	}
+	else if ( triValues.m_angle_b!=0 && triValues.m_side_h!=0 ) ///checks for info necessary to use cos
+	{
+		triValues.m_side_2 = cos(triValues.m_angle_b*(M_PI/180))*triValues.m_side_h;
+	}
+	else if ( triValues.m_angle_a!=0 && triValues.m_side_1!=0 ) ///checks for info necessary to use tan
+	{
+		triValues.m_side_2 = tan(triValues.m_angle_a*(M_PI/180))*triValues.m_side_1;
+	}
+  else if ( triValues.m_side_h!=0 && triValues.m_side_1!=0 )
+  {
+    triValues.m_side_2 = sqrt((pow(triValues.m_side_h,2) - pow(triValues.m_side_1,2)));
+  }
+
+
+	return triValues.m_side_2; ///returns result
+}
+
+float GetSide_h(struct Triangle triValues)
+	/**function to calculate the hypotenuse, uses correct trig
+	function based on what information is known*/
+{
+	if ( triValues.m_angle_a!=0 && triValues.m_side_2!=0 )
+	{
+    triValues.m_side_h = triValues.m_side_2/sin(triValues.m_angle_a*(180/M_PI));
+	}
+	else if ( triValues.m_angle_b!=0 && triValues.m_side_1!=0 )
+	{
+    triValues.m_side_h = triValues.m_side_1/cos(triValues.m_angle_b*(180/M_PI));
+	}
+  else if ( triValues.m_side_1!=0 && triValues.m_side_2!=0 )
+  {
+    triValues.m_side_h = sqrt((pow(triValues.m_side_1,2) + pow(triValues.m_side_2,2)));
+  }
+  return triValues.m_side_h;
+}
+
+float GetAngle_a(struct Triangle triValues)
+	/**funtion to calculate angle A, uses checks to determine which info
+	is known and uses appropriate trig function accordingly*/
+{
+	if ( triValues.m_side_1!=0 && triValues.m_side_h!=0 ) ///checks user input for known values to indicate use of acos
+	{
+		triValues.m_angle_a = acos(triValues.m_side_1/triValues.m_side_h)*(180/M_PI);
+	}
+	else if ( triValues.m_side_2!=0 && triValues.m_side_h!=0 ) ///checks user input for known values to indicate use of asin
+	{
+		triValues.m_angle_a = asin(triValues.m_side_2/triValues.m_side_h)*(180/M_PI);
+	}
+	else if ( triValues.m_side_1!=0 && triValues.m_side_2!=0 ) ///checks user input for known values to indicate use of atan
+	{
+		triValues.m_angle_a = atan(triValues.m_side_2/triValues.m_side_1)*(180/M_PI);
+	}
+
+	return triValues.m_angle_a; ///returns result
+}
+
+float GetAngle_b(struct Triangle triValues)
+	/**funtion to calculate angle A, uses checks to determine which info
+	is known and uses appropriate trig function accordingly*/
+{
+	if ( triValues.m_side_1!=0 && triValues.m_side_h!=0 ) ///checks user input for known values to indicate use of acos
+	{
+		triValues.m_angle_b = asin(triValues.m_side_1/triValues.m_side_h)*(180/M_PI);
+	}
+	else if ( triValues.m_side_2!=0 && triValues.m_side_h!=0 ) ///checks user input for known values to indicate use of asin
+	{
+		triValues.m_angle_b = acos(triValues.m_side_2/triValues.m_side_h)*(180/M_PI);
+	}
+	else if ( triValues.m_side_1!=0 && triValues.m_side_2!=0 ) ///checks user input for known values to indicate use of atan
+	{
+		triValues.m_angle_b = atan(triValues.m_side_1/triValues.m_side_2)*(180/M_PI);
+	}
+
+	return triValues.m_angle_b; ///returns result
+}
+
+float GetArea(struct Triangle triValues)
+	///function that calculates the area of the triangle
+{
+	if ( triValues.m_side_1!=0 && triValues.m_side_2!=0 )
+	{
+		triValues.m_area = (triValues.m_side_1*triValues.m_side_2)/2;
+	}
+
+	return triValues.m_area;
+}
+
+bool ValidTriangle(struct Triangle triValues)
+{
+    if ( pow(triValues.m_side_1,2) + pow(triValues.m_side_2,2) != pow(triValues.m_side_h,2) )
+    {
+      std::cout<< "Your sides do not build a right angle triangle. Please input other values.";
+      return false;
+    }
+
+    if ( triValues.m_angle_a + triValues.m_angle_b + 90 != 180)
+    {
+      std:: cout<< "Your angle values do not add up to 180 degrees. Please input other values.";
+      return false;
+    }
+
+  return true;
+} 
